@@ -38,8 +38,10 @@ def homogenous_transformation_matrix(axis, angle, v_A):
   Returns:
     4x4 transformation matrix as a numpy array
   """
+  rot_mat = rotation_matrix(axis, angle)
+  trans_mat = np.append(v_A, 1) 
+  T = np.column_stack((rot_mat, trans_mat))
 
-  T = np.eye(4)
   return T
 
 def fk_hip(joint_angles):
