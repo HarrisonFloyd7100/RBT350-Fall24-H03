@@ -17,8 +17,13 @@ def rotation_matrix(axis, angle):
   Returns:
     3x3 rotation matrix as a numpy array
   """
-
   rot_mat = np.eye(3)
+  matrix_k = np.array([[0, axis[2] * -1, axis[1]], 
+                      [axis[2], 0, axis[0] * -1],
+                      [axis[1] * -1, axis[0], 0]])
+  rot_mat += matrix_k * math.sin((angle * math.pi)/180)
+  squared_k = np.matmul(matrix_k, matrix_k)
+  rot_mat += squared_k * (1 - math.cos((angle * math.pi)/180))
   return rot_mat
 
 def homogenous_transformation_matrix(axis, angle, v_A):
