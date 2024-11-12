@@ -38,9 +38,8 @@ def homogenous_transformation_matrix(axis, angle, v_A):
   Returns:
     4x4 transformation matrix as a numpy array
   """
-  rot_mat = rotation_matrix(axis, angle)
-  trans_mat = np.append(v_A, 1) 
-  T = np.column_stack((rot_mat, trans_mat))
+  rot_mat = rotation_matrix(axis, angle) 
+  T = np.block([[rot_mat, v_A.T], [0,0,0,1]])
 
   return T
 
@@ -73,10 +72,12 @@ def fk_shoulder(joint_angles):
   """
 
   # remove these lines when you write your solution
-  default_sphere_location = np.array([[0.15, 0.0, -0.1]])
-  shoulder_frame = np.block(
-    [[np.eye(3), default_sphere_location.T], 
-     [0, 0, 0, 1]])
+  # shoulder_frame = np.block(
+  #   [[np.eye(3), default_sphere_location.T], 
+  #    [0, 0, 0, 1]])
+  hip_frame = fk_hip(joint_angles)
+  shoulder_frame = homogenous_transformation_matrix([1,0,0], joint_angles[1], np.array([[0,-0.025,0]]))
+  shoulder_frame = np.matmul(hip_frame, shoulder_frame)
   return shoulder_frame
 
 def fk_elbow(joint_angles):
@@ -92,10 +93,13 @@ def fk_elbow(joint_angles):
   """
 
   # remove these lines when you write your solution
-  default_sphere_location = np.array([[0.15, 0.1, -0.1]])
-  elbow_frame = np.block(
-    [[np.eye(3), default_sphere_location.T], 
-     [0, 0, 0, 1]])
+  # default_sphere_location = np.array([[0.15, 0.1, -0.1]])
+  # elbow_frame = np.block(
+  #   [[np.eye(3), default_sphere_location.T], 
+  #    [0, 0, 0, 1]])
+  shoulder_frame = fk_shoulder(joint_angles)
+  elbow_frame = homogenous_transformation_matrix([0,0,0], joint_angles[2], np.array([[0,0,0.1]]))
+  elbow_frame = np.matmul(shoulder_frame, elbow_frame)
   return elbow_frame
 
 def fk_foot(joint_angles):
