@@ -21,9 +21,9 @@ def rotation_matrix(axis, angle):
   matrix_k = np.array([[0, axis[2] * -1, axis[1]], 
                       [axis[2], 0, axis[0] * -1],
                       [axis[1] * -1, axis[0], 0]])
-  rot_mat += matrix_k * math.sin((angle * math.pi)/180)
+  rot_mat += matrix_k * math.sin(angle)
   squared_k = np.matmul(matrix_k, matrix_k)
-  rot_mat += squared_k * (1 - math.cos((angle * math.pi)/180))
+  rot_mat += squared_k * (1 - math.cos(angle))
   return rot_mat
 
 def homogenous_transformation_matrix(axis, angle, v_A):
@@ -50,6 +50,7 @@ def fk_hip(joint_angles):
   Args:
     joint_angles: numpy array of 3 elements stored in the order [hip_angle, shoulder_angle, 
                   elbow_angle]. Angles are in radians
+
   Returns:
     4x4 matrix representing the pose of the hip frame in the base frame
   """
