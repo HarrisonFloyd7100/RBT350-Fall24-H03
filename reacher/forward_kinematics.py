@@ -57,7 +57,7 @@ def fk_hip(joint_angles):
     4x4 matrix representing the pose of the hip frame in the base frame
   """
 
-  hip_frame = np.eye(4)  # remove this line when you write your solution
+  hip_frame = homogenous_transformation_matrix([0,0,1], joint_angles[0], np.array([[0,0,0]]))
   return hip_frame
 
 def fk_shoulder(joint_angles):
