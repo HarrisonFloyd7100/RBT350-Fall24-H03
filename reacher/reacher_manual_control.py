@@ -162,8 +162,10 @@ def main(argv):
 
 			# Show the result in the terminal
 			if counter % 20 == 0:
-				print("Simulated robot joint positions: ", sim_joint_positions)
+				#print("Simulated robot joint positions: ", sim_joint_positions)
+				print(foot_pos)
 				if run_on_robot:
-					print("Real robot joint positions: ", reacher_real.get_joint_positions())
+					#print("Real robot joint positions: ", reacher_real.get_joint_positions())
+					pass
 
 app.run(main)

@@ -115,8 +115,11 @@ def fk_foot(joint_angles):
   """
 
   # remove these lines when you write your solution
-  default_sphere_location = np.array([[0.15, 0.2, -0.1]])
-  end_effector_frame = np.block(
-    [[np.eye(3), default_sphere_location.T], 
-     [0, 0, 0, 1]])
+  # default_sphere_location = np.array([[0.15, 0.2, -0.1]])
+  # end_effector_frame = np.block(
+  #   [[np.eye(3), default_sphere_location.T], 
+  #    [0, 0, 0, 1]])
+  elbow_frame = fk_elbow(joint_angles)
+  end_effector_frame = homogenous_transformation_matrix([0,1,0], joint_angles[2], np.array([[0,0,0.125]]))
+  end_effector_frame = np.matmul(elbow_frame, end_effector_frame)
   return end_effector_frame
