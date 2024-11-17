@@ -34,7 +34,6 @@ def ik_cost(end_effector_pos, guess):
     # Add your solution here.
     forward_position = forward_kinematics.fk_foot(guess)[0:3,3]
     cost = np.linalg.norm(end_effector_pos - forward_position)
-    print(cost)
     return cost
 
 
@@ -57,18 +56,12 @@ def calculate_jacobian_FD(joint_angles, delta):
     J = np.zeros([3, 3])
 
     # Add your solution here.
-    print("delta is {}".format(delta))
     for i in range(3):
         for j in range(3):
             starting_pos = forward_kinematics.fk_foot(joint_angles) # finds the current position
-            print()
-            print("j is {} starting joint angles \n{}".format(j, joint_angles))
             joint_angles[j] += delta # applies the small change
-            print("ending joint angles \n{}".format(joint_angles))
             change_in_pos = forward_kinematics.fk_foot(joint_angles) # calculates the new position
 
-            print("starting position is \n{}".format(starting_pos))
-            print("Changed position is \n{}".format(change_in_pos))
         
             J[i][j] = ( (change_in_pos[i][3] - starting_pos[i][3] ) / delta ) # calculates the d/dq
 
@@ -102,24 +95,24 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
 
         # Calculate the Jacobian matrix using finite differences
         J = calculate_jacobian_FD(q_current,DELTA)
-        print(J)
 
         fks = forward_kinematics.fk_foot(q_current)
         a = [[fks[0][3]], [fks[1][3]], [fks[2][3]]]
-        foot_pos = np.array(a)
+        foot_pos = np.transpose(np.array(a))
         # Calculate the distance from our target for each position(x,y,z) 
         distance_from_target = np.subtract(end_effector_pos, foot_pos) # distance = target - f(q)
         # Compute the step to update the joint angles using the Moore-Penrose pseudoinverse using numpy.linalg.pinv
         J_inv = np.linalg.pinv(J)
 
-        # Take a full Newton step to update the guess for joint angles
-        q_next = q_current + np.matmul(J_inv,distance_from_target)
 
-        cost = ik_cost(end_effector_pos,q_next) #calculates cost of that decision
+        # Take a full Newton step to update the guess for joint angles
+        q_next = q_current + np.transpose(np.matmul(J_inv,np.transpose(distance_from_target)))
+
+        cost = ik_cost(end_effector_pos, np.transpose(q_next)) #calculates cost of that decision
 
         # Calculate the cost based on the updated guess
         if abs(previous_cost - cost) < TOLERANCE:
             break
         previous_cost = cost
     
-    return guess
+    return np.transpose(q_next)
