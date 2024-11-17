@@ -53,16 +53,16 @@ def calculate_jacobian_FD(joint_angles, delta):
     """
 
     # Initialize Jacobian to zero
-    J = np.zeros((3, 3))
+    J = np.zeros([3, 3])
 
     # Add your solution here.
 
-    for (i,j) in J :
-
-        starting_pos = forward_kinematics.fk_foot(joint_angles) # finds the current position
-        joint_angles[j] += delta # applies the small change
-        change_in_pos = forward_kinematics.fk_foot(joint_angles) # calculates the new position
-        J[i][j] = ( (change_in_pos - starting_pos[i] ) / delta ) # calculates the d/dq
+    for i in range(3):
+        for j in range(3):
+            starting_pos = forward_kinematics.fk_foot(joint_angles) # finds the current position
+            joint_angles[j] += delta # applies the small change
+            change_in_pos = forward_kinematics.fk_foot(joint_angles) # calculates the new position
+            J[i][j] = ( (change_in_pos[i][3] - starting_pos[i][3] ) / delta ) # calculates the d/dq
 
     return J
 
@@ -95,8 +95,11 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         # Calculate the Jacobian matrix using finite differences
         J = calculate_jacobian_FD(q_current,DELTA)
 
+        fks = forward_kinematics.fk_foot(q_current)
+        a = [[fks[0][3]], [fks[1][3]], [fks[2][3]]]
+        foot_pos = np.array(a)
         # Calculate the distance from our target for each position(x,y,z) 
-        distance_from_target = np.subtract(end_effector_pos, forward_kinematics.fk_foot(q_current)) # distance = target - f(q)
+        distance_from_target = np.subtract(end_effector_pos, foot_pos) # distance = target - f(q)
         # Compute the step to update the joint angles using the Moore-Penrose pseudoinverse using numpy.linalg.pinv
         J_inv = np.linalg.pinv(J)
 
