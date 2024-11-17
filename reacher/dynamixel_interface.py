@@ -11,7 +11,7 @@ class Reacher:
         print("Found the following ports for the Dynamixel motors: ", ports)
         if len(ports) == 0:
             raise Exception("Unable to scan the dynamicel motor. Please make sure the U2D2 is correctly connected to your machine.")
-        port = ports[0]
+        port = ports[4]
         self.dxl_io = Dxl320IO(port) 
 
         self.motor_IDs = self.dxl_io.scan([1, 2, 3])
