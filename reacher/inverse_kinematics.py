@@ -57,12 +57,12 @@ def calculate_jacobian_FD(joint_angles, delta):
 
     # Add your solution here.
 
-    for (i,j) in J :
-
-        starting_pos = forward_kinematics.fk_foot(joint_angles) # finds the current position
-        joint_angles[j] += delta # applies the small change
-        change_in_pos = forward_kinematics.fk_foot(joint_angles) # calculates the new position
-        J[i][j] = ( (change_in_pos - starting_pos[i] ) / delta ) # calculates the d/dq
+    for i in range(3):
+        for j in range(3):
+            starting_pos = forward_kinematics.fk_foot(joint_angles) # finds the current position
+            joint_angles[j] += delta # applies the small change
+            change_in_pos = forward_kinematics.fk_foot(joint_angles) # calculates the new position
+            J[i][j] = ( (change_in_pos - starting_pos[i] ) / delta ) # calculates the d/dq
 
     return J
 
