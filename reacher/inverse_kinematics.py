@@ -51,7 +51,6 @@ def calculate_jacobian_FD(joint_angles, delta):
         numpy.ndarray: The Jacobian matrix. A 3x3 numpy array representing the linear mapping
         between joint velocity and end-effector linear velocity.
     """
-    joint_angles = np.transpose(joint_angles)
     # Initialize Jacobian to zero
     J = np.zeros([3, 3])
 
@@ -97,9 +96,9 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         # Calculate the Jacobian matrix using finite differences
         J = calculate_jacobian_FD(q_current,DELTA)
 
-        fks = forward_kinematics.fk_foot(np.transpose(q_current))
-        a = [[fks[0][3]], [fks[1][3]], [fks[2][3]]]
-        foot_pos = np.transpose(np.array(a))
+        fks = forward_kinematics.fk_foot(q_current)
+        a = [fks[0][3], fks[1][3], fks[2][3]]
+        foot_pos = np.array(a)
         # Calculate the distance from our target for each position(x,y,z) 
         distance_from_target = np.subtract(end_effector_pos, foot_pos) # distance = target - f(q)
         print("distance from target is:\n{}".format(distance_from_target))
@@ -111,8 +110,8 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         q_next = q_current + np.transpose(np.matmul(J_inv,np.transpose(distance_from_target)))
         q_current = q_next
         # finds the next position we would take with this q_next
-        fks = forward_kinematics.fk_foot(np.transpose(q_next))
-        a = [[fks[0][3]], [fks[1][3]], [fks[2][3]]]
+        fks = forward_kinematics.fk_foot(q_next)
+        a = [fks[0][3], fks[1][3], fks[2][3]]
         foot_pos = np.array(a)
 
         
@@ -128,4 +127,4 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         print("the cost is: {}".format(cost))
 
     
-    return np.transpose(q_next)
+    return q_next # not sure if this needs to be transposed, will check later
