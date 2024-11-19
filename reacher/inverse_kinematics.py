@@ -8,7 +8,7 @@ UPPER_LEG_OFFSET = 0.10 # length of link 1
 LOWER_LEG_OFFSET = 0.13 # length of link 2
 TOLERANCE = 0.01 # tolerance for inverse kinematics
 PERTURBATION = 0.0001 # perturbation for finite difference method
-MAX_ITERATIONS = 10
+MAX_ITERATIONS = 100
 DELTA = 0.0001
 
 def ik_cost(end_effector_pos, guess):
@@ -32,8 +32,7 @@ def ik_cost(end_effector_pos, guess):
     cost = 0.0
 
     # Add your solution here.
-    forward_position = forward_kinematics.fk_foot(guess)[0:3,3]
-    cost = np.linalg.norm(end_effector_pos - forward_position)
+    cost = np.linalg.norm(end_effector_pos - guess)
     return cost
 
 
@@ -102,20 +101,14 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         foot_pos = np.transpose(np.array(a))
         # Calculate the distance from our target for each position(x,y,z) 
         distance_from_target = np.subtract(end_effector_pos, foot_pos) # distance = target - f(q)
-        print("distance from target is:\n{}".format(distance_from_target))
+        print("distance from target is:\n{}".format(np.linalg.norm(distance_from_target)))
         # Compute the step to update the joint angles using the Moore-Penrose pseudoinverse using numpy.linalg.pinv
         J_inv = np.linalg.pinv(J)
 
 
         # Take a full Newton step to update the guess for joint angles
         q_next = q_current + np.transpose(np.matmul(J_inv,np.transpose(distance_from_target)))
-        q_current = q_next
-        # finds the next position we would take with this q_next
-        fks = forward_kinematics.fk_foot(np.transpose(q_next))
-        a = [[fks[0][3]], [fks[1][3]], [fks[2][3]]]
-        foot_pos = np.array(a)
-
-        
+        q_current = q_next        
 
         print("the desired position is: \n {}".format(end_effector_pos))
         print("the current position is: \n {}".format(foot_pos))
