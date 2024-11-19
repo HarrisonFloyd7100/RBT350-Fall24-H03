@@ -76,7 +76,7 @@ def fk_shoulder(joint_angles):
   #   [[np.eye(3), default_sphere_location.T], 
   #    [0, 0, 0, 1]])
   hip_frame = fk_hip(joint_angles)
-  shoulder_frame = homogenous_transformation_matrix([0,1,0], joint_angles[1], np.array([[0,-0.025,0]]))
+  shoulder_frame = homogenous_transformation_matrix([0,1,0], joint_angles[1], np.array([[0,HIP_OFFSET * -1,0]]))
   shoulder_frame = np.matmul(hip_frame, shoulder_frame)
   return shoulder_frame
 
@@ -98,7 +98,7 @@ def fk_elbow(joint_angles):
   #   [[np.eye(3), default_sphere_location.T], 
   #    [0, 0, 0, 1]])
   shoulder_frame = fk_shoulder(joint_angles)
-  elbow_frame = homogenous_transformation_matrix([0,1,0], joint_angles[2], np.array([[0,0,0.1]]))
+  elbow_frame = homogenous_transformation_matrix([0,1,0], joint_angles[2], np.array([[0,0, UPPER_LEG_OFFSET]]))
   elbow_frame = np.matmul(shoulder_frame, elbow_frame)
   return elbow_frame
 
@@ -120,6 +120,6 @@ def fk_foot(joint_angles):
   #   [[np.eye(3), default_sphere_location.T], 
   #    [0, 0, 0, 1]])
   elbow_frame = fk_elbow(joint_angles)
-  end_effector_frame = homogenous_transformation_matrix([0,1,0], joint_angles[2], np.array([[0,0,0.125]]))
+  end_effector_frame = homogenous_transformation_matrix([0,1,0], joint_angles[2], np.array([[0,0, LOWER_LEG_OFFSET]]))
   end_effector_frame = np.matmul(elbow_frame, end_effector_frame)
   return end_effector_frame
