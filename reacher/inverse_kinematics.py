@@ -101,7 +101,6 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         foot_pos = np.transpose(np.array(a))
         # Calculate the distance from our target for each position(x,y,z) 
         distance_from_target = np.subtract(end_effector_pos, foot_pos) # distance = target - f(q)
-        print("distance from target is:\n{}".format(np.linalg.norm(distance_from_target)))
         # Compute the step to update the joint angles using the Moore-Penrose pseudoinverse using numpy.linalg.pinv
         J_inv = np.linalg.pinv(J)
 
@@ -110,15 +109,11 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         q_next = q_current + np.transpose(np.matmul(J_inv,np.transpose(distance_from_target)))
         q_current = q_next        
 
-        print("the desired position is: \n {}".format(end_effector_pos))
-        print("the current position is: \n {}".format(foot_pos))
-        print("current q: {}".format(q_current))
         cost = ik_cost(end_effector_pos, foot_pos) #calculates cost of that decision
         # Calculate the cost based on the updated guess
         if abs(previous_cost - cost) < TOLERANCE:
             break
         previous_cost = cost
-        print("the cost is: {}".format(cost))
 
     
     return np.transpose(q_next)
