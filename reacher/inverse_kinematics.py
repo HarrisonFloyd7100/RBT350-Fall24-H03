@@ -100,6 +100,7 @@ def calculate_inverse_kinematics(end_effector_pos, guess):
         foot_pos = np.array(a)
         # Calculate the distance from our target for each position(x,y,z) 
         distance_from_target = np.subtract(end_effector_pos, foot_pos) # distance = target - f(q)
+        
         # Compute the step to update the joint angles using the Moore-Penrose pseudoinverse using numpy.linalg.pinv
         J_inv = np.linalg.pinv(J)
 
